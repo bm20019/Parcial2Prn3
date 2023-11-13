@@ -1,0 +1,71 @@
+<composition xmlns="http://xmlns.jcp.org/jsf/facelets"
+             template="./WEB-INF/templates/raiz.xhtml"
+
+
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:btt="jakarta.faces.composite/btnparq">
+
+<!--    <define name="tabla">
+        <h:form id="frmTabla" >
+            <p:dataTable value="#{frmTipoEspacio.modelo}" var="r"
+                         lazy="true"
+                         paginator="true"
+                         rows="3"
+                         first="0"
+                         selectionMode="single"
+                         selection="#{frmTipoEspacio.regis}"
+                         rendered="#{empty frmTipoEspacio.regis}"
+                         >
+
+                <p:ajax process="@this" update=":pnlDetalle @form" 
+                        listener="#{frmTipoEspacio.seleccionarRegistro}"
+                        event="rowSelect"/>
+                <p:column title="ID">
+                    <h:outputText value="#{r.idTipoEspacio}"/>
+                </p:column>
+                <p:column title="NOMBRE">
+                    <h:outputText value="#{r.nombre}"/>
+                </p:column>
+
+
+            </p:dataTable>
+
+            <btt:botonesTop bean="#{frmTipoEspacio}" />
+
+        </h:form>
+
+    </define>-->
+
+<!--    <define name="detalle">
+        <h:panelGroup id="pnlDetalle">
+            <h:form rendered="#{not empty frmTipoEspacio.regis}">
+
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="ID" for="txtId"/>
+                    <p:inputText id="txtId" value="#{frmTipoEspacio.regis.idTipoEspacio}"/>
+                    <p:outputLabel value="Nombre" for="txtNombre"/>
+                    <p:inputText id="txtNombre" value="#{frmTipoEspacio.regis.nombre}" size="70"/>
+                </h:panelGrid>
+                <p:commandButton value="Guardar" 
+                                 actionListener="#{frmTipoEspacio.btnGuardarHandler}"
+                                 update="@form :frmTabla"
+                                 rendered="#{frmTipoEspacio.estado=='NUEVO'}"
+                                 />
+                <p:commandButton value="Modificar" 
+                                 rendered="#{frmTipoEspacio.estado=='MODIFICAR'}"
+                                 update=":pnlDetalle :frmTabla"
+                                 actionListener="#{frmTipoEspacio.btnModificarHandler}"/>
+                <p:commandButton value="Eliminar" 
+                                 rendered="#{frmTipoEspacio.estado=='MODIFICAR'}"
+                                 update=":pnlDetalle :frmTabla"
+                                 actionListener="#{frmTipoEspacio.btnEliminarHandler}"/>
+                <p:messages/>
+            </h:form>
+
+        </h:panelGroup>
+
+    </define>-->
+
+</composition>

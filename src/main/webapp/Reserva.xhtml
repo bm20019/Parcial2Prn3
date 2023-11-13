@@ -1,0 +1,40 @@
+<composition xmlns="http://xmlns.jcp.org/jsf/facelets" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:p="http://primefaces.org/ui"
+             xmlns:btnparq="jakarta.faces.composite/btnparq" xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="./WEB-INF/templates/raiz.xhtml">
+    <define name="tabla">
+        <h:form id="frmTabla">
+            <p:dataTable value="#{frmReserva.modelo}" var="r" lazy="true" paginator="true" rows="3" first="0" selectionMode="single" selection="#{frmReserva.registro}" rendered="#{empty frmReserva.registro}">
+                <p:ajax process="@this" update=":pnlDetalle @form" listener="#{frmReserva.seleccionarRegistro}" event="rowSelect"/>
+                <p:column headerText="ID">
+                    <h:outputText value="#{r.idReserva}"/>
+                </p:column>
+                <p:column headerText="TIPO">
+                    <h:outputText value="#{r.idTipoReserva.nombre}"/>
+                </p:column>
+                <p:column headerText="ESPACIO">
+                    <h:outputText value="#{frmReserva.generarPathArea(r.idEspacio.idEspacio)}"/>
+                </p:column>
+                <p:column headerText="DESDE">
+                    <h:outputText value="#{r.desde}">
+                        <f:convertDateTime pattern="dd/MM/yyy HH:mm:ss" timeZone="GMT"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="HASTA">
+                    <h:outputText value="#{r.hasta}" rendered="#{not empty r.hasta}">
+                        <f:convertDateTime pattern="dd/MM/yyy HH:mm:ss" timeZone="GMT"/>
+                    </h:outputText>
+                    <h:outputText value="SIN DEFINIR" rendered="#{empty r.hasta}"/>
+                </p:column>
+                <p:column headerText="OBSERVACIONES">
+                    <h:outputText value="#{r.observaciones}"/>
+                </p:column>
+            </p:dataTable>
+            <btnparq:botonesTop bean="#{frmReserva}"/>
+        </h:form>
+    </define> 
+
+    <define name="detalle">
+        <h:panelGroup id="pnlDetalle">
+            
+        </h:panelGroup>
+    </define>
+</composition>          

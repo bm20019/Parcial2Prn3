@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:component xmlns=""
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute 
+            name="bean"
+            type="sv.edu.ues.occ.ingenieria.prn335.parqueo.parqueowebapp.app.boundary.jsf.AbstractFrm"            
+            required="true"
+            shortDescription="Nombre del backing bean que implemente las funcionalidades para CRUD"
+            />
+        
+        <cc:attribute
+            name="refrescar"
+            type="java.lang.String"
+            required="false"
+            default="@form :pnlDetalle"
+            />
+            
+        
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+            <p:commandButton value="#{trad.frm_nuevo}" 
+                             update="#{cc.attrs.refrescar}"
+                             rendered="#{empty cc.attrs.bean.registro}"
+                             actionListener="#{cc.attrs.bean.btnNuevoHandler}"/>
+            <p:commandButton value="#{trad.frm_cancelar }" 
+                             update="#{cc.attrs.refrescar}"
+                             rendered="#{not empty cc.attrs.bean.registro}"
+                             styleClass="ui-button-warning"
+                             actionListener="#{cc.attrs.bean.btnCancelarHandler}"/>
+     
+    </cc:implementation>
+</ui:component>

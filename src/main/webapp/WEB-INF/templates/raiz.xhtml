@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+    <!--
+    <meta http-equiv="refresh" content="5"/>
+    -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.11.0/css/flag-icons.min.css"
+        />
+
+    <h:head>
+        <title>Parq. UES 1.0 </title>        
+        <h:outputStylesheet library="estilos" name="tabla.css"/>
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:panelGroup styleClass="ui-inputgroup">
+                <h:panelGroup id="icon" styleClass="ui-inputgroup-addon">
+                    <i class="fi fi-#{seccionUsuario.idiomaSeleccionado == 'es' ? 'es':
+                                      (seccionUsuario.idiomaSeleccionado == 'en' ?'us' :'es`')}"/>
+                </h:panelGroup>
+                <p:selectOneMenu value="#{seccionUsuario.idiomaSeleccionado}"
+                                 valueChangeListener="#{seccionUsuario.cambiarIdioma}"
+                                 var="idio"
+                                 >
+                    <f:selectItems
+                        value="#{['es','en']}"
+                        var="idio"
+                        itemLabel="#{idio == 'es' ? 'Español': (idio =='en' ? 'English' :'')}" itemValue="#{idio}"
+                        />
+                    <p:column><i class="fi fi-#{idio == 'es' ? 'es': (idio =='en' ? 'us' :'')}" />
+                        #{idio == 'es' ? 'Español': (idio =='en' ? 'English' :'')}
+                    </p:column>
+                    <f:ajax render="@all"/>
+                </p:selectOneMenu>
+                <p:panel style="background: red; width: 0px;">
+                    <p:growl/>
+                    <p:autoUpdate/>
+                </p:panel>
+            </h:panelGroup>
+        </h:form>
+        <center><h1>#{trad.frm_titulo_TipoReserva}</h1></center>
+        <div class="area" id="backGroud">
+            <ul class="i">
+                <li></li>
+            </ul>
+        </div>
+        <div 
+            style="
+            display: flex;
+            margin: auto;
+            width: 100%;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 15px;
+            ">
+        <ui:insert name="tabla">
+            Aqui deberia ir una tabla            
+        </ui:insert>
+        <ui:insert name="detalle">
+            Aqui deberia ir un detalle
+        </ui:insert>
+            
+        <ui:insert name="extras">
+
+        </ui:insert>
+            
+</div>
+    </h:body>
+</html>

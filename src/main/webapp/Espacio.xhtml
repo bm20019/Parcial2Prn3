@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<composition     xmlns="http://xmlns.jcp.org/jsf/facelets"
+                 template="./WEB-INF/templates/raiz.xhtml"
+
+                 xmlns:ui="jakarta.faces.facelets"
+                 xmlns:h="jakarta.faces.html"
+                 xmlns:f="jakarta.faces.core"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:btt="jakarta.faces.composite/btnparq">
+    <define name="tabla">
+        
+        <p:outputLabel value="#{not empty frmArea.registro?'vivo que funciono':'no existe'}"/>
+        
+        <h:form id="frmTabla">
+            <p:dataTable value="#{frmEspacio.modelo}" var="r"
+                         stripedRows="true"
+                         paginator="true"
+                         lazy="true"
+                         first="0"
+                         rows="5"
+                         selectionMode="single"
+                         selection="#{frmEspacio.registro}"
+                         rendered="#{empty frmEspacio.registro}">
+                
+                <p:ajax process="@this" update="@form"
+                        listener="#{frmEspacio.seleccionarRegistro()}"
+                        event="rowSelect"/>
+                
+                <p:column title="ID" headerText="#{trad.frm_id}">
+                    <h:outputText value="#{r.idEspacio}"/>
+                </p:column>
+                <p:column title="Nombre" headerText="#{trad.frm_nombre}">
+                    <h:outputText value="#{r.nombre}"/>
+                </p:column>
+            </p:dataTable>
+
+            <btt:botonesTop bean="#{frmEspacio}"/>
+            
+        </h:form>
+    </define>
+    
+    <define name="detalle">
+        <h:panelGroup id="pnlDetalle" >
+            <h:form rendered="#{not empty frmEspacio.registro}" >
+               
+            </h:form>
+        </h:panelGroup>
+
+        
+    </define>
+</composition>
