@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<composition     xmlns="http://xmlns.jcp.org/jsf/facelets"
+                 template="./WEB-INF/templates/raiz.xhtml"
+
+                 xmlns:ui="jakarta.faces.facelets"
+                 xmlns:h="jakarta.faces.html"
+                 xmlns:f="jakarta.faces.core"
+                 xmlns:p="http://primefaces.org/ui"
+                 xmlns:btt="jakarta.faces.composite/btnprq">
+
+
+    <define name="tabla">
+        <h:panelGroup id="pnlTree"
+                      style="
+                      position: relative;
+                      width: 40%;
+                      flex-shrink: 1;
+                      flex-basis: 30%;
+                      ">
+            <h:form>
+                <p:tree value="#{frmArea.raiz}" var="ro"
+                        filterBy="${ro.nombre}"
+                        animate="true"
+                        dynamic="true"
+                        selectionMode="single"
+                        selection="#{frmArea.nodoSeleccionado}"
+                        style="padding: 10px;">
+                    <p:treeNode>
+                        <h:outputText value="#{ro.nombre}"/>
+                    </p:treeNode>
+                    <p:ajax process="@this" update=":pnlDetalle @form:btnTop :dlgEspacio"
+                            oncomplete="PF('tbvw').select(0)"
+                            listener="#{frmArea.seleccionarNodoListener}"
+                            event="select"/>
+                </p:tree>
+
+                <h:panelGroup id="btnTop"
+                              style="
+                              margin-top: 10px;
+                              position: absolute;
+                              right: 0;
+                              display: flex;
+                              gap: 10px;
+                              ">
+                    <p:commandButton value="NuevoRaiz"
+                                     styleClass="ui-button-help"
+                                     actionListener="#{frmArea.btnNuevoRaiz}"
+                                     rendered="#{frmArea.estado == 'NINGUNO'}"
+                                     update="@form:btnTop :pnlDetalle"
+                                     oncomplete="PF('tbvw').select(0)"/>
+
+                    <p:commandButton value="Crear SubArea"
+                                     actionListener="#{frmArea.btnNuevoHandler}"
+                                     rendered="#{not empty frmArea.areaPadre and frmArea.estado == 'MODIFICAR'}"
+                                     update="@form:btnTop :pnlDetalle"
+                                     oncomplete="PF('tbvw').select(0)"/>
+
+                    <p:commandButton value="#{trad.frm_cancelar }" 
+                                     styleClass="ui-button-warning"
+                                     actionListener="#{frmArea.btnCancelarHandler}"
+                                     rendered="#{not empty frmArea.registro}"
+                                     update="@form:btnTop :pnlDetalle"
+                                     />
+                </h:panelGroup>
+            </h:form>
+        </h:panelGroup>
+    </define>
+
+
+
+
+
+    <define name="detalle">
+        <h:panelGroup id="pnlDetalle"
+                      style="
+                      max-width: 60%;
+                      height: 500px;
+                      ">
+            <h:form rendered="#{not empty frmArea.registro}" id="fmDetalle">
+                <p:tabView styleClass="mi-tab-view" id="tbvw" widgetVar="tbvw">
+                    <p:tab title="Generalidades">
+                        <h:panelGrid columns="2" styleClass="mi-panel-grid">
+                            <f:facet name="header">
+                                <p:outputLabel value="Editar #{frmArea.registro.nombre}"
+                                               rendered="#{frmArea.estado=='MODIFICAR'}"
+                                               style="font-size: 1.4em;"/>
+                                <p:outputLabel value="Crear Nueva Area Raiz"
+                                               rendered="#{frmArea.estado=='NUEVO' and empty frmArea.areaPadre}"
+                                               style="font-size: 1.4em;"/>
+                                <p:outputLabel value="Crear subarea apratir de: #{frmArea.areaPadre.nombre}"
+                                               rendered="#{frmArea.estado=='NUEVO' and not empty frmArea.areaPadre}"
+                                               style="font-size: 1.4em;"/>
+                            </f:facet>
+                            <p:outputLabel value="#{trad.frm_id}" for="txtId"/>
+                            <p:inputText id="txtId" value="#{frmArea.registro.idArea}" readonly="true" disabled="true"/>
+
+                            <p:outputLabel value="#{trad.frm_nombre}" for="txtNombre"/>
+                            <p:inputText id="txtNombre" value="#{frmArea.registro.nombre}" size="20" autocomplete="false"/>
+
+                            <p:outputLabel value="#{trad.frm_descripcion}" for="txtDescripcion"/>
+                            <p:inputTextarea id="txtDescripcion" value="#{frmArea.registro.descripcion}"
+                                             cols="20" rows="3"/>
+                        </h:panelGrid>
+                        <h:panelGroup id="btnTop"
+                                      style="
+                                      margin-top: 10px;
+                                      display: flex;
+                                      gap: 5px;
+                                      justify-content: center;
+                                      ">
+                            <p:commandButton value="#{trad.frm_guardar}"
+                                             update=":pnlDetalle :pnlTree"
+                                             rendered="#{frmArea.estado=='NUEVO'}"
+                                             actionListener="#{frmArea.btnGuardarHandler}"/>
+
+                            <p:commandButton value="#{trad.frm_modificar}"
+                                             update=":pnlDetalle :pnlTree"
+                                             rendered="#{frmArea.estado == 'MODIFICAR'}"
+                                             actionListener="#{frmArea.btnModificarHandler}"/>
+
+                            <p:commandButton value="#{trad.frm_eliminar}"
+                                             update=":pnlDetalle :pnlTree"
+                                             rendered="#{frmArea.estado == 'MODIFICAR'}"
+                                             styleClass="ui-button-danger"
+                                             actionListener="#{frmArea.btnEliminarHandler(ae)}"/>
+                        </h:panelGroup>
+                    </p:tab>
+
+                    <p:tab title="Espacio" id="tabEspacio" disabled="#{frmArea.estado ==  'NUEVO'}">
+                        <h:panelGroup id="dttEspacio">
+                            <p:dataTable value="#{frmArea.frmEspacio.modelo}" var="re"
+                                         paginator="true"
+                                         lazy="true"
+                                         first="0"
+                                         rows="5"
+                                         selectionMode="single"
+                                         selection="#{frmArea.frmEspacio.registro}"
+                                         >   
+                                <p:ajax process="@this"
+                                        listener="#{frmArea.frmEspacio.seleccionarRegistro()}"
+                                        event="rowSelect"
+                                        update="dlgEspacio"
+                                        onsuccess="PF('wiz').loadStep('wiz01', false)"
+                                        oncomplete="PF('dlg3').show()"
+                                        />
+                                <p:column title="ID" headerText="#{trad.frm_id}">
+                                    <h:outputText value="#{re.idEspacio}"/>
+                                </p:column>
+                                <p:column title="Nombre" headerText="#{trad.frm_nombre}">
+                                    <h:outputText value="#{re.nombre}"/>
+                                </p:column>
+                                <p:column title="Estado" headerText="Estado">
+                                    <h:outputText value="#{re.activo?trad.frm_activo:trad.frm_inactivo}"/>
+                                </p:column>
+                                <p:column title="Observaciones" headerText="Observaciones">
+                                    <h:outputText value="#{re.observaciones}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:commandButton value="#{trad.frm_nuevo}"
+                                             icon="pi pi-external-link"
+                                             update=":dlgEspacio"
+                                             onsuccess="PF('wiz').loadStep('wiz01', false)"
+                                             oncomplete="PF('dlg3').show()"
+                                             actionListener="#{frmArea.frmEspacio.btnNuevoHandler(ae)}"
+                                             />
+                        </h:panelGroup>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </h:panelGroup>
+    </define>
+
+
+    <define name="extras">
+        <h:panelGroup id="dlgEspacio">
+            <h:form id="frmEspacio">
+                <p:dialog 
+                    header="Paso de Configuracion"
+                    id="dlg3"
+                    widgetVar="dlg3"
+                    height="auto"
+                    dynamic="true"
+                    showEffect="expand"
+                    hideEffect="explode"
+                    modal="true"
+                    maximizable="true"
+                    closeOnEscape="true"
+                    resizable="false"
+                    onShow="PF('wiz').loadStep('wiz01', false)"
+                    >
+                    <!-- update="fmDetalle:tbvw:tabEspacio" -->
+                    <p:ajax event="close"
+                            update=":fmDetalle:tbvw:dttEspacio"
+                            oncomplete="PF('wiz').loadStep('wiz01', false)"
+                            listener="#{frmArea.closeDialogEspacioListener(ae)}"
+                            />
+                    <p:wizard widgetVar="wiz" id="wiz" effect="puff" showNavBar="false">
+
+                        <p:tab title="Generalidades" id="wiz01">
+                            <h:panelGrid columns="2" styleClass="mi-panel-grid" style="margin: auto;">
+                                <f:facet name="header">
+                                    <p:outputLabel value="Editar: #{frmArea.frmEspacio.registro.nombre}"
+                                                   rendered="#{frmArea.frmEspacio.estado=='MODIFICAR'}"
+                                                   style="font-size: 1.4em;"/>
+                                    <p:outputLabel value="Crear Nuevo Espacio"
+                                                   rendered="#{frmArea.frmEspacio.estado=='NUEVO'}"
+                                                   style="font-size: 1.4em;"/>
+                                </f:facet>
+
+                                <p:outputLabel value="#{trad.frm_id}" for="txtIdEspacio"/>
+                                <p:inputText id="txtIdEspacio" value="#{frmArea.frmEspacio.registro.idEspacio}" readonly="true" disabled="true"/>
+
+                                <p:outputLabel value="#{trad.frm_nombre}" for="txtNombreEspacio"/>
+                                <p:inputText id="txtNombreEspacio" value="#{frmArea.frmEspacio.registro.nombre}" size="20" autocomplete="false"/>
+
+                                <p:outputLabel value="Area" for="lstAreaEspacio"/>
+                                <p:selectOneMenu id="lstAreaEspacio" value="#{frmArea.idAreaEspacio}" var="car" filter="true">
+                                    <f:selectItems value="#{frmArea.listaAreas}" var="ar" itemLabel="#{ar.nombre}"  itemValue="#{ar.idArea}"/>
+                                    <p:column>
+                                        #{frmArea.getAreaFromAreaList(car).nombre}
+                                    </p:column>
+                                    <p:ajax listener="#{frmArea.selectAreaListListener}" process="frmEspacio:lstAreaEspacio"/>
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="Estado" for="chkEstadoEspacio"/>
+                                <p:selectBooleanButton id="chkEstadoEspacio" value="#{frmArea.frmEspacio.registro.activo}"
+                                                       onLabel="Activo" offLabel="Inactivo" onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem" />
+
+                                <p:outputLabel value="#{trad.frm_descripcion}" for="txtObservacionesEspacio"/>
+                                <p:inputTextarea id="txtObservacionesEspacio" value="#{frmArea.frmEspacio.registro.observaciones}"
+                                                 cols="20" rows="3"/>
+                            </h:panelGrid>
+                        </p:tab>
+
+                        <p:tab title="Caracteristicas" id="wiz-2">
+                            <h:panelGroup style="
+                                          display: flex;
+                                          margin: auto;
+                                          flex-wrap: nowrap;
+                                          justify-content: center;
+                                          gap: 20px;
+                                          ">
+                                <h:panelGrid>
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Caracteristicas de :#{frmArea.frmEspacio.registro.nombre}"
+                                                       rendered="#{frmArea.frmEspacio.estado=='MODIFICAR'}"
+                                                       style="font-size: 1.4em;"/>
+                                        <p:outputLabel value="Caracteristicas del nuevo espacio"
+                                                       rendered="#{frmArea.frmEspacio.estado=='NUEVO'}"
+                                                       style="font-size: 1.4em;"/>
+                                    </f:facet>
+                                    <p:selectOneListbox 
+                                        value="#{frmArea.frmEspacio.frmEspacioCaracteristica.longIdEspacio}"
+                                        var="ec"
+                                        rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio.size() != 0}"
+                                        >
+                                        <f:selectItems value="#{frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio}"
+                                                       var="ecl"
+                                                       itemValue="#{ecl.idEspacioCaracteristica}"/>
+                                        <p:column>
+                                            id: #{frmArea.frmEspacio.frmEspacioCaracteristica.getECFromECList(ec).idEspacioCaracteristica}
+                                        </p:column>
+                                        <p:column>
+                                            #{frmArea.frmEspacio.frmEspacioCaracteristica.getECFromECList(ec).descripcion}
+                                        </p:column>
+                                        <p:column>
+                                            #{frmArea.frmEspacio.frmEspacioCaracteristica.getECFromECList(ec).valor}
+                                        </p:column>
+                                        <p:ajax update="@form:wiz"
+                                                listener="#{frmArea.frmEspacio.frmEspacioCaracteristica.selectECListListener(ef)}"
+                                                event="change"
+                                                />
+                                    </p:selectOneListbox>
+                                    <h:panelGroup
+                                        style="
+                                        margin: 20px;
+                                        justify-content: center;
+                                        display: flex;
+
+                                        gap: 10px;
+                                        ">
+                                        <p:outputLabel value="Este Espacio Cuenta con: "/>
+                                        <p:tag styleClass="mr-2" severity="warning"
+                                               value="#{frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio.size()}"
+                                               style="align-content: center;"
+                                               rounded="true"/>
+                                        <p:commandButton value="#{trad.frm_nuevo}"
+                                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.btnNuevoHandler(ae)}"
+                                                         rendered="#{empty frmArea.frmEspacio.frmEspacioCaracteristica.registro}" 
+                                                         update="@form:wiz"/>
+                                        <p:commandButton value="#{trad.frm_cancelar}"
+                                                         styleClass="ui-button-warning"
+                                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.btnCancelarHandler(ae)}"
+                                                         rendered="#{not empty frmArea.frmEspacio.frmEspacioCaracteristica.registro}" 
+                                                         update="@form:wiz"/>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+
+                                <h:panelGrid rendered="#{not empty frmArea.frmEspacio.frmEspacioCaracteristica.registro}" columns="2" >
+
+                                    <p:outputLabel value="#{trad.frm_id}" for="txtIdEspacioCaracteristica"/>
+                                    <p:inputText id="txtIdEspacioCaracteristica" value="#{frmArea.frmEspacio.frmEspacioCaracteristica.registro.idEspacioCaracteristica}" readonly="true" disabled="true"/>
+
+                                    <p:outputLabel value="Tipo de Espacio" for="listTipoEspacioEspCar"/>
+                                    <p:selectOneMenu id="listTipoEspacioEspCar"
+                                                     value="#{frmArea.frmEspacio.frmEspacioCaracteristica.frmTipoEspacio.idTipoEspacio}" 
+                                                     var="idTipo" filter="true">
+                                        <f:selectItems value="#{frmArea.frmEspacio.frmEspacioCaracteristica.frmTipoEspacio.listaTE}"
+                                                       var="te" itemLabel="#{te.nombre}" itemValue="#{te.idTipoEspacio}"/>
+                                        <p:column>
+                                            #{frmArea.frmEspacio.frmEspacioCaracteristica.frmTipoEspacio.teOfListTE(idTipo).nombre}
+                                        </p:column>
+                                        <p:ajax
+                                            listener="#{frmArea.frmEspacio.frmEspacioCaracteristica.selectTEListLisetener(ae)}"
+                                            event="change"/>
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel value="Descripcion" for="txtDescripcionEspCar"/>
+                                    <p:inputText id="txtDescripcionEspCar" value="#{frmArea.frmEspacio.frmEspacioCaracteristica.registro.descripcion}" size="20" autocomplete="false"/>
+
+                                    <p:outputLabel value="Valor" for="txtValorEspCar"/>
+                                    <p:inputText id="txtValorEspCar" value="#{frmArea.frmEspacio.frmEspacioCaracteristica.registro.valor}" size="20" autocomplete="false"/>
+
+                                    <h:panelGroup
+                                        style="
+                                        margin-top: 10px;
+                                        justify-content: right;
+                                        display: flex;
+                                        gap: 10px;
+                                        ">
+                                        <p:commandButton value="#{trad.frm_guardar}"
+                                                         rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.estado=='NUEVO'}"
+                                                         update="@form:wiz NavTvwb"
+                                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.btnGuardarHandler(ae)}"
+                                                         />
+
+                                        <p:commandButton value="#{trad.frm_modificar}"
+                                                         rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.estado == 'MODIFICAR'}"
+                                                         update="@form:wiz NavTvwb"
+                                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.btnModificarHandler}"
+                                                         />
+
+                                        <p:commandButton value="#{trad.frm_eliminar}"
+                                                         rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.estado == 'MODIFICAR'}"
+                                                         update="@form:wiz NavTvwb"
+                                                         styleClass="ui-button-danger"
+                                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.btnEliminarHandler}"
+                                                         />
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </p:tab>
+                    </p:wizard>
+
+                    <h:panelGroup id="NavTvwb" style="
+                                  display: flex;
+                                  gap: 20px;
+                                  justify-content: center;
+                                  ">
+                        <p:commandButton onclick="PF('wiz').back();" value="Atras"
+                                         rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.tomarespacio() == 1}"
+                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.stepTbvwBack()}"
+                                         styleClass="rounded-button ui-button-success ui-button-outlined"
+                                         icon="pi pi-caret-left"
+                                         update="NavTvwb"/>
+
+                        <p:commandButton value="#{trad.frm_guardar}"
+                                         rendered="#{frmArea.frmEspacio.estado=='NUEVO' 
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio.size() != 0
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.tomarespacio() == 1}"
+                                         onsuccess ="PF('dlg3').hide()"
+                                         actionListener="#{frmArea.frmEspacio.btnGuardarHandler}"
+                                         />
+
+                        <p:commandButton value="#{trad.frm_modificar}"
+                                         rendered="#{frmArea.frmEspacio.estado == 'MODIFICAR'
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio.size() != 0
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.tomarespacio() == 1}"
+                                         update=":fmDetalle:tbvw:dttEspacio"
+                                         onsuccess ="PF('dlg3').hide()"
+                                         actionListener="#{frmArea.frmEspacio.btnModificarHandler}"
+                                         />
+
+                        <p:commandButton value="#{trad.frm_eliminar}"
+                                         rendered="#{frmArea.frmEspacio.estado == 'MODIFICAR'
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.listByIdEspacio.size() == 0
+                                                     and frmArea.frmEspacio.frmEspacioCaracteristica.tomarespacio() == 1}"
+                                         update=":fmDetalle:tbvw:dttEspacio"
+                                         onsuccess ="PF('dlg3').hide()"
+                                         styleClass="ui-button-danger"
+                                         actionListener="#{frmArea.frmEspacio.btnEliminarHandler}"
+                                         />
+
+                        <p:commandButton onclick="PF('wiz').next();" value="Siguiente"
+                                         rendered="#{frmArea.frmEspacio.frmEspacioCaracteristica.tomarespacio() == 0}"
+                                         styleClass="rounded-button ui-button-success ui-button-outlined"
+                                         update="NavTvwb"
+                                         icon="pi pi-caret-right"
+                                         actionListener="#{frmArea.frmEspacio.frmEspacioCaracteristica.stepTbvwNext()}" />
+                    </h:panelGroup>
+                </p:dialog>
+            </h:form>
+        </h:panelGroup>
+    </define>
+
+</composition>

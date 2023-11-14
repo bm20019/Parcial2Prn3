@@ -48,10 +48,56 @@
                                     <p:ajax process="@this" update="pnlDesde pnlHasta pnlEspacio"/>
                                 </p:selectOneMenu>
                             </h:panelGrid>
-                        </h:panelGrid>    
+                            <h:panelGrid columns="2" id="pnlDesde">
+                                <p:outputLabel for="txtDesde" value="Desde" rendered="#{not empty frmReserva.registro.idTipoReserva}"/>
+                                <p:calendar id="txtDesde" pattern="dd/MM/yyyy HH:mm:ss" showHour="true" showMinute="true" value="#{frmReserva.registro.desde}" timeZone="GMT" rendered="#{not empty frmReserva.registro.idTipoReserva}">
+                                    <f:ajax execute="@this" render="pnlHasta pnlEspacio" listener="#{frmReserva.cambiarFechaDesde}"/>
+                                </p:calendar>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" id="pnlHasta">
+                                <p:outputLabel for="txtHasta" value="Hasta" rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}"/>
+                                <p:calendar id="txtHasta" pattern="dd/MM/yyyy HH:mm:ss" showHour="true" showMinute="true" validator="#{frmReserva.validate}" value="#{frmReserva.registro.hasta}" timeZone="GMT" rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}">
+                                    <p:ajax process="@this" update="msgs pnlEspacio" resetValues="true"/>
+                                </p:calendar>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3" id="pnlEspacio">
+                                <h:outputLabel value="Espacio:" rendered="#{not empty frmReserva.registro.hasta}"/>
+                                <h:inputText value="#{frmReserva.generarPathArea(frmReserva.registro.idEspacio.idEspacio)}" rendered="#{not empty frmReserva.registro.hasta}" readonly="true" disabled="true" size="70"/>
+                                <p:commandButton value="Cambiar espacio" rendered="#{not empty frmReserva.registro.hasta}" type="button" onclick="PF('dlgEspacio').show();"/>
+                            </h:panelGrid>
+                            <p:messages id="msgs" showDetail="true"/>
+                        </h:panelGrid> 
                     </h:form>
                 </p:tab>
             </p:tabView>
         </h:panelGroup>
     </define>
+    <ui:define name="extras">
+        <p:dialog id="dlgEspacio" cache="false" dynamic="true" widgetVar="dlgEspacio" closable="false" header="Seleccione un espacio">
+            <h:form id="frmSeleccionarEspacio">
+                <h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Seleccione un area"/>
+                        <p:tree value="#{frmReserva.raiz}" var="nodo" dynamic="true" selectionMode="single" selection="#{frmReserva.nodoSeleccionado}">
+                            <p:ajax event="select" update="@form" listener="#{frmReserva.seleccionarNodoListener}"/>
+                            <p:treeNode>
+                                <h:outputText value="#{nodo.nombre}"/>
+                            </p:treeNode>
+                        </p:tree>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <p:panel toggleable="true" closable="false" collapsed="true" header="Refinar busqueda" rendered="#{not empty frmReserva.caractaristicasDisponibles}">
+                            <h:selectManyCheckbox layout="pageDirection" value="#{frmReserva.caracteristicasSeleccionadas}">
+                                <f:ajax listener="#{frmReserva.refinarBusquedaNodo}" render="@form"/>
+                                <f:selectItems value="#{frmReserva.caracteristicasDisponiblesAsItems}"/>
+                            </h:selectManyCheckbox>
+                        </p:panel>
+                    </h:panelGrid>
+
+                    <p:commandButton value="Seleccionar" disabled="#{empty frmReserva.registro.idEspacio}" update=":tabDetalle:frmDetalle:pnlEspacio" oncomplete="PF('dlgEspacio').hide();"/>
+                    <p:commandButton value="Cerrar" type="button" onclick="PF('dlgEspacio').hide();"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
 </composition>          
