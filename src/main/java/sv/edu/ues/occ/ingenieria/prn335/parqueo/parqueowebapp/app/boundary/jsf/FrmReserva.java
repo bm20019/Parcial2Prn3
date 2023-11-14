@@ -46,26 +46,25 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
 
     @Inject
     EspacioBean eBean;
-    
+
     @Inject
     FrmArea frmArea;
-    
 
-    public List<EspacioCaracteristica> getCaracteristicasSeleccionadas() {
-        caracteristicasSeleccionadas = frmEspacioCaracteristica.getListByIdEspacio();
-        return caracteristicasSeleccionadas;
-    }
-
-    public void setCaracteristicasSeleccionadas(List<EspacioCaracteristica> caracteristicasSeleccionadas) {
-        this.caracteristicasSeleccionadas = caracteristicasSeleccionadas;
-    }
-    
     @Inject
     FrmEspacioCaracteristica frmEspacioCaracteristica;
-    
-    List<EspacioCaracteristica> caracteristicasSeleccionadas;
+
+    List<String> caracteristicasSeleccionadas;
     List<String> caractaristicasDisponibles;
     List<EspacioCaracteristica> caracteristicasDisponiblesAsItems;
+
+    public List<String> getCaractaristicasDisponibles() {
+        //caracteristicasSeleccionadas = frmEspacioCaracteristica.getListByIdEspacio();
+        return this.caractaristicasDisponibles;
+    }
+    
+    public void setCaractaristicasDisponibles(List<String> caractaristicasDisponibles) {
+        this.caractaristicasDisponibles = caractaristicasDisponibles;
+    }
 
     public List<EspacioCaracteristica> getCaracteristicasDisponiblesAsItems() {
         caracteristicasDisponiblesAsItems = frmEspacioCaracteristica.getListaEC();
@@ -76,30 +75,26 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
         this.caracteristicasDisponiblesAsItems = caracteristicasDisponiblesAsItems;
     }
 
-    public List<String> getCaractaristicasDisponibles() {
-        caractaristicasDisponibles = new ArrayList();
+    public List<String> getCaracteristicasSeleccionadas() {
+        this.caracteristicasSeleccionadas = new ArrayList();
         List<EspacioCaracteristica> cadisponibles = frmEspacioCaracteristica.getListaEC();
         for (int i = 0; i < cadisponibles.size(); i++) {
             TipoEspacio teEspacio = cadisponibles.get(i).getIdTipoEspacio();
-            
+
             String ecNombre = cadisponibles.get(i).getValor();
-            caractaristicasDisponibles.add(teEspacio.getNombre() + ":" +ecNombre  );
+            caracteristicasSeleccionadas.add(teEspacio.getNombre() + ":" + ecNombre);
         }
-        return caractaristicasDisponibles;
+        return this.caracteristicasSeleccionadas;
     }
-
-    public void setCaractaristicasDisponibles(List<String> caractaristicasDisponibles) {
-        this.caractaristicasDisponibles = caractaristicasDisponibles;
+    
+    public void setCaracteristicasSeleccionadas(List<String> caracteristicasSeleccionadas) {
+        this.caracteristicasSeleccionadas = caracteristicasSeleccionadas;
     }
-
-
-
-
 
     public TreeNode getRaiz() {
-       frmArea.generarArbol();
-       raiz = frmArea.getRaiz();
-       return raiz;    
+        frmArea.generarArbol();
+        raiz = frmArea.getRaiz();
+        return raiz;
     }
 
     public void setRaiz(TreeNode raiz) {
@@ -113,7 +108,7 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
     public void setNodoSeleccionado(TreeNode nodoSeleccionado) {
         this.nodoSeleccionado = nodoSeleccionado;
     }
-    
+
     TreeNode raiz;
     TreeNode nodoSeleccionado;
 
@@ -216,13 +211,12 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
 
     }
 
-   
     public void seleccionarNodoListener(NodeSelectEvent nse) {
         frmArea.seleccionarNodoListener(nse);
     }
-    
-    public void refinarBusquedaNodo(){
-        
+
+    public void refinarBusquedaNodo() {
+
     }
-   
+
 }

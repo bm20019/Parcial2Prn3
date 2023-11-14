@@ -30,7 +30,6 @@ public abstract class AbstractFrm<T> implements Serializable {
 public abstract AbstractDataAccess<T> getDataAccess();
 
     LazyDataModel<T> modelo;
-
     EstadosCRUD estado = EstadosCRUD.NINGUNO;
 
     T registro = null;
