@@ -8,9 +8,6 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,102 +37,30 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
     ReservaBean rBean;
     @Inject
     FacesContext fc;
-
     @Inject
     TipoReservaBean trBean;
-
     @Inject
     EspacioBean eBean;
-
     @Inject
     FrmArea frmArea;
 
-    @Inject
-    FrmEspacioCaracteristica frmEspacioCaracteristica;
-
-    List<String> caracteristicasSeleccionadas;
-    List<String> caractaristicasDisponibles;
-    List<EspacioCaracteristica> caracteristicasDisponiblesAsItems;
-
-    public List<String> getCaractaristicasDisponibles() {
-        //caracteristicasSeleccionadas = frmEspacioCaracteristica.getListByIdEspacio();
-        return this.caractaristicasDisponibles;
-    }
-    
-    public void setCaractaristicasDisponibles(List<String> caractaristicasDisponibles) {
-        this.caractaristicasDisponibles = caractaristicasDisponibles;
-    }
-
-    public List<EspacioCaracteristica> getCaracteristicasDisponiblesAsItems() {
-        caracteristicasDisponiblesAsItems = frmEspacioCaracteristica.getListaEC();
-        return caracteristicasDisponiblesAsItems;
-    }
-
-    public void setCaracteristicasDisponiblesAsItems(List<EspacioCaracteristica> caracteristicasDisponiblesAsItems) {
-        this.caracteristicasDisponiblesAsItems = caracteristicasDisponiblesAsItems;
-    }
-
-    public List<String> getCaracteristicasSeleccionadas() {
-        this.caracteristicasSeleccionadas = new ArrayList();
-        List<EspacioCaracteristica> cadisponibles = frmEspacioCaracteristica.getListaEC();
-        for (int i = 0; i < cadisponibles.size(); i++) {
-            TipoEspacio teEspacio = cadisponibles.get(i).getIdTipoEspacio();
-
-            String ecNombre = cadisponibles.get(i).getValor();
-            caracteristicasSeleccionadas.add(teEspacio.getNombre() + ":" + ecNombre);
-        }
-        return this.caracteristicasSeleccionadas;
-    }
-    
-    public void setCaracteristicasSeleccionadas(List<String> caracteristicasSeleccionadas) {
-        this.caracteristicasSeleccionadas = caracteristicasSeleccionadas;
-    }
-
-    public TreeNode getRaiz() {
-        frmArea.generarArbol();
-        raiz = frmArea.getRaiz();
-        return raiz;
-    }
-
-    public void setRaiz(TreeNode raiz) {
-        this.raiz = raiz;
-    }
-
-    public TreeNode getNodoSeleccionado() {
-        return nodoSeleccionado;
-    }
-
-    public void setNodoSeleccionado(TreeNode nodoSeleccionado) {
-        this.nodoSeleccionado = nodoSeleccionado;
-    }
-
-    TreeNode raiz;
-    TreeNode nodoSeleccionado;
+    private TreeNode raiz;
+    private TreeNode nodoSeleccionado;
 
     private List<TipoReserva> listaTipoReserva;
-    private Integer IdTipoReserva = null;
+    //private Integer IdTipoReserva = null;
+
+    private List<String> caracteristicasSeleccionadas;
+    private List<String> caractaristicasDisponibles;
+    private List<String> caracteristicasDisponiblesAsItems;
+
+    private Area areaPadre;
+
+    private List<Espacio> espaciosDisponibles;
 
     @Override
     public AbstractDataAccess<Reserva> getDataAccess() {
         return this.rBean;
-    }
-
-    public List<TipoReserva> getListaTipoReserva() {
-        List<TipoReserva> newArray = new ArrayList<>();
-
-//        TipoReserva tr1 = new TipoReserva();
-//        tr1.setIdTipoReserva(1);
-//        tr1.setNombre("larga duracion");
-//        newArray.add(tr1);
-//        
-//        listaTipoReserva = newArray;
-        listaTipoReserva = trBean.FindRange(0, 999);
-        return listaTipoReserva;
-
-    }
-
-    public void setListaTipoReserva(List<TipoReserva> listaTipoReserva) {
-        this.listaTipoReserva = listaTipoReserva;
     }
 
     @Override
@@ -165,6 +90,15 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
         this.registro = new Reserva();
     }
 
+    public List<TipoReserva> getListaTipoReserva() {
+        listaTipoReserva = trBean.FindRange(0, 999);
+        return listaTipoReserva;
+    }
+
+    public void setListaTipoReserva(List<TipoReserva> listaTipoReserva) {
+        this.listaTipoReserva = listaTipoReserva;
+    }
+
     public String generarPathArea(long idEspacio) {
 
         Espacio espacio = eBean.findById(idEspacio);
@@ -179,44 +113,121 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
             }
         }
         return "";
-
     }
 
     public void cambiarFechaDesde() {
         this.registro.setDesde(new Date());
     }
 
-    public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        // Obtiene la fecha actual
-//    Date fechaActual = new Date();
-//
-//    // Obtiene la fecha seleccionada
-//    Date fechaSeleccionada = (Date) value;
-//
-//    // Verifica que la fecha seleccionada sea posterior a la fecha actual
-//    if (this.registro.getHasta().before(fechaSeleccionada)) {
-//        throw new ValidatorException(new FacesMessage("La fecha debe ser posterior a la fecha actual"));
-//    } else{
-//        throw new ValidatorException(new FacesMessage(fechaSeleccionada.toString()));
-//    }
-
+    public boolean validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         // Obtiene la fecha seleccionada
         Date fechaSeleccionada = (Date) value;
 
         if (fechaSeleccionada != null && !this.registro.getDesde().after(fechaSeleccionada)) {
-            System.out.print(fechaSeleccionada + "/" + this.registro.getDesde());
-            return;
+            //System.out.print(fechaSeleccionada + "/" + this.registro.getDesde());
+            return true;
         }
         throw new ValidatorException(new FacesMessage("La fecha debe ser posterior a la fecha actual"));
-
     }
 
     public void seleccionarNodoListener(NodeSelectEvent nse) {
-        frmArea.seleccionarNodoListener(nse);
+        this.caractaristicasDisponibles = new ArrayList<>();
+        nse.getTreeNode().setExpanded(true);
+        Area area = (Area) nse.getTreeNode().getData();
+        areaPadre = area;
+
+        List<Espacio> esList = areaPadre.getEspacioList();
+        for (int i = 0; i < esList.size(); i++) {
+            Espacio es = esList.get(i);
+            List<EspacioCaracteristica> esCList = es.getEspacioCaracteristicaList();
+            for (int j = 0; j < esCList.size(); j++) {
+                EspacioCaracteristica ec = esCList.get(j);
+                TipoEspacio tp = ec.getIdTipoEspacio();
+
+                this.caractaristicasDisponibles.add(tp.getNombre() + ": " + ec.getValor());
+            }
+        }
+
+        for (int i = 0; i < this.caractaristicasDisponibles.size(); i++) {
+            System.out.print(this.caractaristicasDisponibles.get(i));
+        }
+
+        this.caracteristicasSeleccionadas = this.caractaristicasDisponibles;
+        this.setCaracteristicasDisponiblesAsItems(this.caracteristicasSeleccionadas);
+    }
+
+    public List<String> getCaractaristicasDisponibles() {
+        return this.caractaristicasDisponibles;
+    }
+
+    public void setCaractaristicasDisponibles(List<String> caractaristicasDisponibles) {
+        this.caractaristicasDisponibles = caractaristicasDisponibles;
+    }
+
+    public List<String> getCaracteristicasDisponiblesAsItems() {
+        return caracteristicasDisponiblesAsItems;
+    }
+
+    public void setCaracteristicasDisponiblesAsItems(List<String> caracteristicasDisponiblesAsItems) {
+        this.caracteristicasDisponiblesAsItems = caracteristicasDisponiblesAsItems;
+    }
+
+    public List<String> getCaracteristicasSeleccionadas() {
+        return this.caracteristicasSeleccionadas;
+    }
+
+    public void setCaracteristicasSeleccionadas(List<String> caracteristicasSeleccionadas) {
+        this.caracteristicasSeleccionadas = caracteristicasSeleccionadas;
+    }
+
+    public TreeNode getRaiz() {
+        frmArea.generarArbol();
+        raiz = frmArea.getRaiz();
+        return raiz;
+    }
+
+    public void setRaiz(TreeNode raiz) {
+        this.raiz = raiz;
+    }
+
+    public TreeNode getNodoSeleccionado() {
+        return nodoSeleccionado;
+    }
+
+    public void setNodoSeleccionado(TreeNode nodoSeleccionado) {
+        this.nodoSeleccionado = nodoSeleccionado;
     }
 
     public void refinarBusquedaNodo() {
 
     }
 
+    public List<Espacio> getEspaciosDisponibles() {
+        if (this.areaPadre != null) {
+            if (!this.areaPadre.getAreaList().equals(null)) {
+                List<Area> ar = this.areaPadre.getAreaList();
+
+                for (int i = 0; i < ar.size(); i++) {
+                    Area ar1 = ar.get(i);
+                    List<Espacio> es = ar1.getEspacioList();
+                    for (int j = 0; j < es.size(); j++) {
+                        Espacio esp = es.get(j);
+                        espaciosDisponibles.add(esp);
+                    }
+                }
+            } else {
+                List<Espacio> es = this.areaPadre.getEspacioList();
+                for (int j = 0; j < es.size(); j++) {
+                    Espacio esp = es.get(j);
+                    espaciosDisponibles.add(esp);
+                }
+            }
+        }
+
+        return espaciosDisponibles;
+    }
+
+    public void setEspaciosDisponibles(List<Espacio> espaciosDisponibles) {
+        this.espaciosDisponibles = espaciosDisponibles;
+    }
 }

@@ -93,6 +93,18 @@
                             </h:selectManyCheckbox>
                         </p:panel>
                     </h:panelGrid>
+                    
+                    <h:panelGrid id="pnlEspacios" columns="2">
+                        <h:outputLabel value="Espacios disponibles" rendered="#{not empty frmReserva.espaciosDisponibles}"/>
+                        <h:selectOneListbox id="lstEspaciosDisponibles" rendered="#{not empty frmReserva.espaciosDisponibles}" size="3" 
+                                            value="#{frmReserva.registro.idEspacio}">
+                            <f:selectItems value="#{frmReserva.espaciosDisponibles}" 
+                                           var="ed" itemLabel="#{ed.nombre}"
+                                           itemValue="#{ed}"/>
+                            <f:ajax render="@form"/>
+                            <f:converter converterId="espacioConverter"/>
+                        </h:selectOneListbox>
+                    </h:panelGrid>
 
                     <p:commandButton value="Seleccionar" disabled="#{empty frmReserva.registro.idEspacio}" update=":tabDetalle:frmDetalle:pnlEspacio" oncomplete="PF('dlgEspacio').hide();"/>
                     <p:commandButton value="Cerrar" type="button" onclick="PF('dlgEspacio').hide();"/>
