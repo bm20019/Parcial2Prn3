@@ -51,6 +51,9 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
     FrmArea frmArea;
 
     @Inject
+    FrmEspacio frmEspacio;
+    
+    @Inject
     FrmEspacioCaracteristica frmEspacioCaracteristica;
 
     List<String> caracteristicasSeleccionadas;
@@ -187,18 +190,6 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
     }
 
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        // Obtiene la fecha actual
-//    Date fechaActual = new Date();
-//
-//    // Obtiene la fecha seleccionada
-//    Date fechaSeleccionada = (Date) value;
-//
-//    // Verifica que la fecha seleccionada sea posterior a la fecha actual
-//    if (this.registro.getHasta().before(fechaSeleccionada)) {
-//        throw new ValidatorException(new FacesMessage("La fecha debe ser posterior a la fecha actual"));
-//    } else{
-//        throw new ValidatorException(new FacesMessage(fechaSeleccionada.toString()));
-//    }
 
         // Obtiene la fecha seleccionada
         Date fechaSeleccionada = (Date) value;
@@ -212,11 +203,23 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
     }
 
     public void seleccionarNodoListener(NodeSelectEvent nse) {
-        frmArea.seleccionarNodoListener(nse);
+//        frmArea.seleccionarNodoListener(nse);
+         
+
+        Area area = (Area) nse.getTreeNode().getData();
+        Area areaPadre = area;
+        this.seleccionarRegistro();
+
+        if (areaPadre == null && areaPadre.getIdAreaPadre() == null) {
+            this.frmEspacio.setIdArea(area.getIdArea());
+//            this.IdAreaEspacio = area.getIdArea();
+        }
+    
     }
 
-    public void refinarBusquedaNodo() {
 
+    public void refinarBusquedaNodo() {
+        
     }
 
 }

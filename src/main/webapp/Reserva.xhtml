@@ -65,8 +65,9 @@
                                 <h:inputText value="#{frmReserva.generarPathArea(frmReserva.registro.idEspacio.idEspacio)}" rendered="#{not empty frmReserva.registro.hasta}" readonly="true" disabled="true" size="70"/>
                                 <p:commandButton value="Cambiar espacio" rendered="#{not empty frmReserva.registro.hasta}" type="button" onclick="PF('dlgEspacio').show();"/>
                             </h:panelGrid>
-                            <p:messages id="msgs" showDetail="true"/>
                         </h:panelGrid> 
+                        <btnparq:botonesBottom bean="#{frmReserva}" refrescar=":<bt:botonesBottom/> :pnlDetalle"/>
+                        <p:messages id="msgs" showDetail="true"/>
                     </h:form>
                 </p:tab>
             </p:tabView>

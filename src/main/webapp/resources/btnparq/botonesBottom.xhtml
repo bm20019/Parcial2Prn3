@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:component xmlns=""
+              xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute
+            name="bean"
+            type="sv.edu.ues.occ.ingenieria.prn335.parqueo.parqueowebapp.app.boundary.jsf.AbstractFrm"
+            required="true"
+            shortDescription="Nombre del backing bean que implementa las funcionalidades para el CRUD"
+            />
+        <cc:attribute
+            name="refrescar"
+            type="java.lang.String"
+            required="false"
+            default=":pnlDetalle @form"
+            />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGrid columns="3">
+            <p:commandButton value="Guardar" 
+                             actionListener="#{cc.attrs.bean.btnGuardarHandler}"
+                             update=":frmTabla :pnlDetalle"
+                             rendered="#{cc.attrs.bean.estado == 'NUEVO'}"/>
+
+            <p:commandButton value="Modificar" 
+                             actionListener="#{cc.attrs.bean.btnModificarHandler}"
+                             update=":frmTabla :pnlDetalle"
+                             rendered="#{cc.attrs.bean.estado == 'MODIFICAR'}"/>
+
+            <p:commandButton value="Eliminar" 
+                             actionListener="#{cc.attrs.bean.btnEliminarHandler}"
+                             update=":frmTabla :pnlDetalle"
+                             rendered="#{cc.attrs.bean.estado == 'MODIFICAR'}"/>
+        </h:panelGrid>
+    </cc:implementation>
+</ui:component>
