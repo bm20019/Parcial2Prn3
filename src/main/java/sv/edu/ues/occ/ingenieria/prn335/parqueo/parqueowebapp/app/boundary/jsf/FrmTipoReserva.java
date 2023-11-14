@@ -28,7 +28,7 @@ public class FrmTipoReserva extends AbstractFrm<TipoReserva>implements Serializa
 TipoReservaBean trBean;
 @Inject
 FacesContext fc;
-Integer idTipoReserva;
+
     @Override
     public AbstractDataAccess<TipoReserva> getDataAccess() {
        return this.trBean;

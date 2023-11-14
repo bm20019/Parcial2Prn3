@@ -34,7 +34,24 @@
 
     <define name="detalle">
         <h:panelGroup id="pnlDetalle">
-            
+            <p:tabView id="tabDetalle" cache="false" dynamic="true" rendered="#{not empty frmReserva.registro}">
+                <p:tab closable="false" title="Generalidades">
+                    <h:form id="frmDetalle" rendered="#{not empty frmReserva.registro}">
+                        <h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="ID"/>
+                                <h:inputText id="txtId" value="#{frmReserva.registro.idReserva}" disabled="true" readonly="true" size="70"/>
+                                <p:outputLabel for="lstTipo" value="Tipo de Reserva"/>
+                                <p:selectOneMenu id="lstTipo" value="#{frmReserva.registro.idTipoReserva}" converter="tipoReservaConverter">
+                                    <f:selectItem noSelectionOption="true" itemLabel="Seleccione uno" itemValue="#{null}"/>
+                                    <f:selectItems value="#{frmReserva.listaTipoReserva}" var="tr" itemLabel="#{tr.nombre}" itemValue="#{tr}" itemDescription="#{tr.descripcion}"/>
+                                    <p:ajax process="@this" update="pnlDesde pnlHasta pnlEspacio"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                        </h:panelGrid>    
+                    </h:form>
+                </p:tab>
+            </p:tabView>
         </h:panelGroup>
     </define>
 </composition>          
