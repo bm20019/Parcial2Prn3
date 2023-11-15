@@ -1,10 +1,27 @@
-<composition xmlns="http://xmlns.jcp.org/jsf/facelets" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:p="http://primefaces.org/ui"
-             xmlns:btnparq="jakarta.faces.composite/btnparq" xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="./WEB-INF/templates/raiz.xhtml">
+<?xml version='1.0' encoding='UTF-8' ?>
+<composition xmlns="http://xmlns.jcp.org/jsf/facelets"
+             template="./WEB-INF/templates/raiz.xhtml"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"    
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:btnparq="jakarta.faces.composite/btnparq"
+             xmlns:f="jakarta.faces.core"
+             xmlns:ui="jakarta.faces.facelets">
     <define name="tabla">
         <h:form id="frmTabla">
-            <p:dataTable value="#{frmReserva.modelo}" var="r" lazy="true" paginator="true" rows="3" first="0" selectionMode="single" selection="#{frmReserva.registro}" rendered="#{empty frmReserva.registro}">
-                <p:ajax process="@this" update=":pnlDetalle @form" listener="#{frmReserva.seleccionarRegistro}" event="rowSelect"/>
-                <p:column headerText="ID">
+            <p:dataTable 
+                value="#{frmReserva.modelo}" var="r"
+                lazy="true"
+                paginator="true"
+                rows="3"
+                first="0"
+                selectionMode="single"
+                selection="#{frmReserva.registro}"
+                rendered="#{empty frmReserva.registro}"
+                >
+                <p:ajax process="@this" update=":pnlDetalle @form" 
+                        listener="#{frmReserva.seleccionarRegistro}"
+                        event="rowSelect"/>
+                <p:column  headerText="ID">
                     <h:outputText value="#{r.idReserva}"/>
                 </p:column>
                 <p:column headerText="TIPO">
@@ -30,8 +47,7 @@
             </p:dataTable>
             <btnparq:botonesTop bean="#{frmReserva}"/>
         </h:form>
-    </define> 
-
+    </define>
     <define name="detalle">
         <h:panelGroup id="pnlDetalle">
             <p:tabView id="tabDetalle" cache="false" dynamic="true" rendered="#{not empty frmReserva.registro}">
@@ -44,56 +60,110 @@
                                 <p:outputLabel for="lstTipo" value="Tipo de Reserva"/>
                                 <p:selectOneMenu id="lstTipo" value="#{frmReserva.registro.idTipoReserva}" converter="tipoReservaConverter">
                                     <f:selectItem noSelectionOption="true" itemLabel="Seleccione uno" itemValue="#{null}"/>
-                                    <f:selectItems value="#{frmReserva.listaTipoReserva}" var="tr" itemLabel="#{tr.nombre}" itemValue="#{tr}" itemDescription="#{tr.descripcion}"/>
+                                    <f:selectItems value="#{frmReserva.listaTipoReserva}" var="tr"
+                                                   itemLabel="#{tr.nombre}" itemValue="#{tr}" itemDescription="#{tr.descripcion}"/>
                                     <p:ajax process="@this" update="pnlDesde pnlHasta pnlEspacio"/>
                                 </p:selectOneMenu>
                             </h:panelGrid>
                             <h:panelGrid columns="2" id="pnlDesde">
                                 <p:outputLabel for="txtDesde" value="Desde" rendered="#{not empty frmReserva.registro.idTipoReserva}"/>
-                                <p:calendar id="txtDesde" pattern="dd/MM/yyyy HH:mm:ss" showHour="true" showMinute="true" value="#{frmReserva.registro.desde}" timeZone="GMT" rendered="#{not empty frmReserva.registro.idTipoReserva}">
+                                <p:calendar id="txtDesde" pattern="dd/MM/yyyy HH:mm:ss" 
+                                            showHour="true" showMinute="true" value="#{frmReserva.registro.desde}"
+                                            timeZone="GMT"
+                                            rendered="#{not empty frmReserva.registro.idTipoReserva}">
                                     <f:ajax execute="@this" render="pnlHasta pnlEspacio" listener="#{frmReserva.cambiarFechaDesde}"/>
+
                                 </p:calendar>
                             </h:panelGrid>
                             <h:panelGrid columns="2" id="pnlHasta">
-                                <p:outputLabel for="txtHasta" value="Hasta" rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}"/>
-                                <p:calendar id="txtHasta" pattern="dd/MM/yyyy HH:mm:ss" showHour="true" showMinute="true" validator="#{frmReserva.validate}" value="#{frmReserva.registro.hasta}" timeZone="GMT" rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}">
+                                <p:outputLabel for="txtHasta" value="Hasta" 
+                                               rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}"/>
+                                <p:calendar id="txtHasta" pattern="dd/MM/yyyy HH:mm:ss" showHour="true" showMinute="true" 
+                                            validator="#{frmReserva.validate}"
+                                            value="#{frmReserva.registro.hasta}" 
+                                            timeZone="GMT"
+                                            rendered="#{not empty frmReserva.registro.desde and not empty frmReserva.registro.idTipoReserva}">
                                     <p:ajax process="@this" update="msgs pnlEspacio" resetValues="true"/>
                                 </p:calendar>
                             </h:panelGrid>
                             <h:panelGrid columns="3" id="pnlEspacio">
                                 <h:outputLabel value="Espacio:" rendered="#{not empty frmReserva.registro.hasta}"/>
-                                <h:inputText value="#{frmReserva.generarPathArea(frmReserva.registro.idEspacio.idEspacio)}" rendered="#{not empty frmReserva.registro.hasta}" readonly="true" disabled="true" size="70"/>
-                                <p:commandButton value="Cambiar espacio" rendered="#{not empty frmReserva.registro.hasta}" type="button" onclick="PF('dlgEspacio').show();"/>
+                                <h:inputText value="#{frmReserva.generarPathArea(frmReserva.registro.idEspacio.idEspacio)}" 
+                                             rendered="#{not empty frmReserva.registro.hasta}" readonly="true" disabled="true" size="70"/>
+                                <p:commandButton value="Cambiar espacio" 
+                                                 rendered="#{not empty frmReserva.registro.hasta}" type="button" onclick="PF('dlgEspacio').show();"/>
                             </h:panelGrid>
-                            <p:messages id="msgs" showDetail="true"/>
-                        </h:panelGrid> 
+                        </h:panelGrid>
+                        <btnparq:botonesBottom bean="#{frmReserva}" refrescar=":frmTabla :pnlDetalle"/>
+                        <p:messages id="msgs" showDetail="true"/>
                     </h:form>
+                </p:tab>
+                <p:tab closable="false" title="Estados" disabled="#{frmReserva.estado!='MODIFICAR'}">
+                    <h:panelGrid>
+                        <h:form id="frmTree">
+                            <p:tree value="#{frmReserva.frmReservaHistorial.raiz}" var="nodo" dynamic="true"
+                                    selectionMode="single"
+                                    selection="#{frmReserva.frmReservaHistorial.nodoSeleccionado}"
+                                    rendered="#{empty frmReserva.frmReservaHistorial.registro}"
+                                    >
+                                <p:ajax event="select" update="@form :tabDetalle:pnlHistorialDetalle" 
+                                        listener="#{frmReserva.frmReservaHistorial.seleccionarNodoListener}"/>
+                                <p:treeNode>
+                                    <h:outputText value="#{nodo.idTipoReservaSecuencia.nombre}"/>
+                                    <h:outputText value=" (ACTUAL)" rendered="#{nodo.activo}"/>
+                                </p:treeNode> 
+                            </p:tree>
+                            <btnparq:botonesTop bean="#{frmReserva.frmReservaHistorial}" refrescar=":tabDetalle:pnlHistorialDetalle @form"/>
+                        </h:form>
+                        <h:panelGroup id="pnlHistorialDetalle">
+                            <h:panelGrid rendered="#{not empty frmReserva.frmReservaHistorial.registro}">
+                                <h:form id="frmHistorialDetalle">
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Estado"/>
+                                        <h:outputText value="#{frmReserva.frmReservaHistorial.registro.idTipoReservaSecuencia.nombre}"/>
+                                        <h:outputLabel value="Fecha Alcanzado"/>
+                                        <h:outputText value="#{frmReserva.frmReservaHistorial.registro.fechaAlcanzado}">
+                                            <f:convertDateTime timeZone="GMT" pattern="dd/MM/yyyy HH:mm:ss z"/>
+                                        </h:outputText>
+                                        <h:outputLabel value="Actual"/>
+                                        <h:outputText value="#{frmReserva.frmReservaHistorial.registro.activo?'SI':'NO'}"/>
+                                    </h:panelGrid>
+                                    <btnparq:botonesBottom bean="#{frmReserva.frmReservaHistorial}" 
+                                                           refrescar=":tabDetalle:pnlHistorialDetalle :tabDetalle:frmTree"/>
+                                </h:form>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGrid>
                 </p:tab>
             </p:tabView>
         </h:panelGroup>
     </define>
     <ui:define name="extras">
-        <p:dialog id="dlgEspacio" cache="false" dynamic="true" widgetVar="dlgEspacio" closable="false" header="Seleccione un espacio">
+        <p:dialog id="dlgEspacio" cache="false" dynamic="true"
+                  widgetVar="dlgEspacio" closable="false" header="Seleccione un espacio">
             <h:form id="frmSeleccionarEspacio">
                 <h:panelGrid>
                     <h:panelGrid columns="2">
                         <p:outputLabel value="Seleccione un area"/>
-                        <p:tree value="#{frmReserva.raiz}" var="nodo" dynamic="true" selectionMode="single" selection="#{frmReserva.nodoSeleccionado}">
+                        <p:tree value="#{frmReserva.raiz}" var="nodo" dynamic="true"
+                                selectionMode="single"
+                                selection="#{frmReserva.nodoSeleccionado}"
+                                >
                             <p:ajax event="select" update="@form" listener="#{frmReserva.seleccionarNodoListener}"/>
                             <p:treeNode>
                                 <h:outputText value="#{nodo.nombre}"/>
-                            </p:treeNode>
+                            </p:treeNode> 
                         </p:tree>
                     </h:panelGrid>
                     <h:panelGrid>
-                        <p:panel toggleable="true" closable="false" collapsed="true" header="Refinar busqueda" rendered="#{not empty frmReserva.caractaristicasDisponibles}">
+                        <p:panel toggleable="true" closable="false" collapsed="true" header="Refinar busqueda" 
+                                 rendered="#{not empty frmReserva.caractaristicasDisponibles}">
                             <h:selectManyCheckbox layout="pageDirection" value="#{frmReserva.caracteristicasSeleccionadas}">
-                                <f:ajax listener="#{frmReserva.refinarBusquedaNodo}" render="@form"/>
+                                <f:ajax listener="#{frmReserva.refinarBusquedaNodo}" render="@form" />
                                 <f:selectItems value="#{frmReserva.caracteristicasDisponiblesAsItems}"/>
                             </h:selectManyCheckbox>
                         </p:panel>
                     </h:panelGrid>
-                    
                     <h:panelGrid id="pnlEspacios" columns="2">
                         <h:outputLabel value="Espacios disponibles" rendered="#{not empty frmReserva.espaciosDisponibles}"/>
                         <h:selectOneListbox id="lstEspaciosDisponibles" rendered="#{not empty frmReserva.espaciosDisponibles}" size="3" 
@@ -105,11 +175,11 @@
                             <f:converter converterId="espacioConverter"/>
                         </h:selectOneListbox>
                     </h:panelGrid>
-
-                    <p:commandButton value="Seleccionar" disabled="#{empty frmReserva.registro.idEspacio}" update=":tabDetalle:frmDetalle:pnlEspacio" oncomplete="PF('dlgEspacio').hide();"/>
+                    <p:commandButton value="Seleccionar" disabled="#{empty frmReserva.registro.idEspacio}" 
+                                     update=":tabDetalle:frmDetalle:pnlEspacio" oncomplete="PF('dlgEspacio').hide();"/>
                     <p:commandButton value="Cerrar" type="button" onclick="PF('dlgEspacio').hide();"/>
                 </h:panelGrid>
             </h:form>
         </p:dialog>
     </ui:define>
-</composition>          
+</composition>
