@@ -161,6 +161,7 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
         espaciosDisponibles = eBean.findByIdArea(area.getIdArea(), 0, 10000);
         caractaristicasDisponibles = teBean.FindRange(0, 100000);
         rellenarEspaciosDisponibles();
+        
         List<SelectItem> items = new ArrayList<>();
 
         for (TipoEspacio caracteristica : caractaristicasDisponibles) {
@@ -168,9 +169,7 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
                 items.add(new SelectItem(caracteristica, caracteristica.getNombre() + ": " + esC.getValor()));
             }
         }
-
         setCaracteristicasDisponiblesAsItems(items);
-
     }
 
     public List<TipoEspacio> getCaractaristicasDisponibles() {
@@ -226,7 +225,6 @@ public class FrmReserva extends AbstractFrm<Reserva> implements Serializable {
             }
         }
         espaciosDisponibles = items;
-
     }
 
     public List<Espacio> getEspaciosDisponibles() {
